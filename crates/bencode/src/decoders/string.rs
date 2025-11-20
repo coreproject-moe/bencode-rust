@@ -1,32 +1,42 @@
-pub fn decode_string(data: &str) -> Result<String, &'static str> {
+pub fn decode_string(data: &str) -> Result<(String, &str), &'static str> {
     let colon = data.find(':').ok_or("Invalid string format")?;
-    let size = data[..colon]
-        .parse::<usize>()
-        .map_err(|_| "Invalid Length")?;
-
-    let string_start = colon + 1;
-    let string_end = string_start + size;
-    let value = data[string_start..string_end].to_string();
-
-    Ok(value)
+    let len: usize = data[..colon].parse().map_err(|_| "Invalid string length")?;
+    let start = colon + 1;
+    let end = start + len;
+    if end > data.len() {
+        return Err("String length out of bounds");
+    }
+    let value = data[start..end].to_string();
+    Ok((value, &data[end..]))
 }
-
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
-    fn test_encode_string() {
-        //
-        assert_eq!(decode_string("7:bencode").unwrap(), "bencode");
+    fn test_decode_string() {
+        // Normal string
+        assert_eq!(
+            decode_string("7:bencode").unwrap(),
+            ("bencode".to_string(), "")
+        );
 
-        // Zero string
-        assert_eq!(decode_string("0:").unwrap(), "");
+        // Zero-length string
+        assert_eq!(decode_string("0:").unwrap(), ("".to_string(), ""));
 
-        // Test an unicode
+        // Unicode string
         assert_eq!(
             decode_string("46:আসস\u{9be}ল\u{9be}ম\u{9c1} আল\u{9be}ইক\u{9c1}ম").unwrap(),
-            "আসসালামু আলাইকুম"
+            ("আসসালামু আলাইকুম".to_string(), "")
+        );
+    }
+
+    #[test]
+    fn test_decode_string_with_remaining_data() {
+        // Remaining data after string
+        assert_eq!(
+            decode_string("5:helloXYZ").unwrap(),
+            ("hello".to_string(), "XYZ")
         );
     }
 }

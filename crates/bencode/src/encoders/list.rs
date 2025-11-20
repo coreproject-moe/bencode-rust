@@ -1,16 +1,11 @@
-use crate::encoders::integer::encode_integer;
-use crate::encoders::string::encode_string;
-use crate::enums::list::BencodeValue;
+use super::_bencode::encode_bencode;
+use crate::enums::bencode::BencodeValue;
 
 pub fn encode_list(data: Vec<BencodeValue>) -> Result<String, &'static str> {
     let mut encoded = String::from("l");
     for item in data {
         // Encode each item based on its type.
-        let item_str = match item {
-            BencodeValue::Int(n) => encode_integer(n)?,
-            BencodeValue::Str(s) => encode_string(&s)?,
-            BencodeValue::List(l) => encode_list(l)?,
-        };
+        let item_str = encode_bencode(item)?;
         encoded.push_str(&item_str);
     }
     encoded.push('e');
