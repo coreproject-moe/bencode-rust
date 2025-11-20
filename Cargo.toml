@@ -1,6 +1,5 @@
-[package]
-name = "bittorrent"
-version = "0.1.0"
+[workspace.package]
 edition = "2024"
 
-[dependencies]
+[workspace]
+members = ["crates/*"]
