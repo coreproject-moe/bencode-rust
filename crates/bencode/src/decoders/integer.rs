@@ -4,6 +4,7 @@ pub fn decode_integer(data: &str) -> Result<(i64, &str), &'static str> {
     }
     let end = data.find('e').ok_or("Missing 'e' for integer")?;
     let int_part = &data[1..end];
+
     let value = int_part.parse::<i64>().map_err(|_| "Invalid Integer")?;
     Ok((value, &data[end + 1..]))
 }
