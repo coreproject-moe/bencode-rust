@@ -20,7 +20,7 @@ mod tests {
     fn test_encode_simple_list() {
         let list = vec![
             BencodeValue::Int(42),
-            BencodeValue::Str("hello".to_string()),
+            BencodeValue::Str("hello".to_string().into_bytes()),
         ];
 
         let encoded = encode_list(list).unwrap();
@@ -33,9 +33,9 @@ mod tests {
             BencodeValue::Int(1),
             BencodeValue::List(vec![
                 BencodeValue::Int(2),
-                BencodeValue::Str("nested".to_string()),
+                BencodeValue::Str("nested".to_string().into_bytes()),
             ]),
-            BencodeValue::Str("end".to_string()),
+            BencodeValue::Str("end".to_string().into_bytes()),
         ];
 
         let encoded = encode_list(nested_list).unwrap();
@@ -52,7 +52,7 @@ mod tests {
     #[test]
     fn test_list_with_only_strings() {
         let list = vec![
-            BencodeValue::Str("bencode".to_string()),
+            BencodeValue::Str("bencode".to_string().into_bytes()),
             BencodeValue::Int(-20),
         ];
         let encoded = encode_list(list).unwrap();

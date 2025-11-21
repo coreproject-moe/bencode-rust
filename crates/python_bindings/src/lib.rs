@@ -3,7 +3,6 @@ use std::collections::BTreeMap;
 use bencode::enums::bencode::BencodeValue;
 use pyo3::{
     IntoPyObjectExt,
-    exceptions::PyValueError,
     prelude::*,
     types::{PyDict, PyList, PyTuple},
 };
@@ -34,13 +33,12 @@ fn py_to_bencode_tokens(obj: Bound<PyAny>) -> PyResult<BencodeValue> {
 
     // Strings -> UTF-8 bytes
     if let Ok(s) = obj.extract::<String>() {
-        return Ok(BencodeValue::Str(s));
+        return Ok(BencodeValue::Str(s.into_bytes()));
     }
 
     // Bytes
     if let Ok(bytes) = obj.extract::<Vec<u8>>() {
-        let s = bytes.iter().map(|&b| b as char).collect();
-        return Ok(BencodeValue::Str(s));
+        return Ok(BencodeValue::Str(bytes));
     }
 
     // Dict

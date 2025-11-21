@@ -32,7 +32,7 @@ mod tests {
         assert_eq!(result.len(), 1);
         assert_eq!(
             result.get("foo"),
-            Some(&BencodeValue::Str("bar".to_string()))
+            Some(&BencodeValue::Str("bar".to_string().into_bytes()))
         );
     }
 

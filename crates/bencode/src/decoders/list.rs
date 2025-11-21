@@ -49,8 +49,8 @@ mod tests {
         assert_eq!(
             result.0,
             vec![
-                BencodeValue::Str("foo".to_string()),
-                BencodeValue::Str("bar".to_string())
+                BencodeValue::Str("foo".to_string().into_bytes()),
+                BencodeValue::Str("bar".to_string().into_bytes())
             ]
         );
         assert_eq!(result.1, "");
@@ -62,7 +62,10 @@ mod tests {
         let result = decode_list(data).unwrap();
         assert_eq!(
             result.0,
-            vec![BencodeValue::Int(42), BencodeValue::Str("foo".to_string())]
+            vec![
+                BencodeValue::Int(42),
+                BencodeValue::Str("foo".to_string().into_bytes())
+            ]
         );
         assert_eq!(result.1, "");
     }
@@ -75,7 +78,7 @@ mod tests {
             result.0,
             vec![
                 BencodeValue::List(vec![BencodeValue::Int(1), BencodeValue::Int(2)]),
-                BencodeValue::Str("foo".to_string())
+                BencodeValue::Str("foo".to_string().into_bytes())
             ]
         );
         assert_eq!(result.1, "");

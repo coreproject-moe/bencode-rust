@@ -22,7 +22,7 @@ pub fn decode_bencode(data: &str) -> Result<(BencodeValue, &str), &'static str> 
         }
         '0'..='9' => {
             let (val, rest) = decode_string(data)?;
-            Ok((BencodeValue::Str(val), rest))
+            Ok((BencodeValue::Str(val.into_bytes()), rest))
         }
         _ => Err("Invalid bencode format"),
     }
