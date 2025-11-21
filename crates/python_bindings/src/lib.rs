@@ -3,7 +3,7 @@ use std::collections::BTreeMap;
 use bencode::enums::bencode::BencodeValue;
 use pyo3::{
     prelude::*,
-    types::{PyDict, PyList, PyTuple},
+    types::{PyDict, PyInt, PyList, PyTuple},
 };
 
 fn py_to_bencode_tokens(obj: Bound<PyAny>) -> PyResult<BencodeValue> {
@@ -15,17 +15,6 @@ fn py_to_bencode_tokens(obj: Bound<PyAny>) -> PyResult<BencodeValue> {
     // Strings -> UTF-8 bytes
     if let Ok(s) = obj.extract::<String>() {
         return Ok(BencodeValue::Str(s));
-    }
-
-    // Bytes
-    if let Ok(bytes) = obj.extract::<Vec<u8>>() {
-        return Ok(BencodeValue::Str(String::from_utf8(bytes).map_err(
-            |_| {
-                PyErr::new::<pyo3::exceptions::PyValueError, _>(
-                    "Dictionary key bytes are not valid UTF-8",
-                )
-            },
-        )?));
     }
 
     // List (PyList)

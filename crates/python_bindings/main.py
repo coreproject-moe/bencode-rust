@@ -1,4 +1,4 @@
-from bencode_rs import sum_as_string
+from bencode_rs import bencode
 
 
-print(sum_as_string({"he": "world"}))
+print(bencode("বাংলা"))
