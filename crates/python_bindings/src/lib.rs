@@ -118,8 +118,7 @@ mod python_bindings {
     fn bencode(obj: Bound<PyAny>) -> PyResult<Vec<u8>> {
         let objects = py_to_bencode_tokens(obj)?;
         let encoded = encode_bencode(objects).unwrap();
-        let encoded_bytes = encoded.into_bytes();
-        Ok(encoded_bytes)
+        Ok(encoded)
     }
 
     #[pyfunction]
