@@ -1,4 +1,4 @@
-pub fn encode_integer(data: i64) -> Result<String, &'static str> {
+pub fn encode_integer(data: isize) -> Result<String, &'static str> {
     let encoded = format!("i{}e", data);
     Ok(encoded.to_owned())
 }

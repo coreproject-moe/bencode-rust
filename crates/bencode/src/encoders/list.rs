@@ -1,4 +1,4 @@
-use super::_bencode::encode_bencode;
+use super::bencode::encode_bencode;
 use crate::enums::bencode::BencodeValue;
 
 pub fn encode_list(data: Vec<BencodeValue>) -> Result<String, &'static str> {

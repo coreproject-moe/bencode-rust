@@ -27,7 +27,7 @@ fn py_to_bencode_tokens(obj: Bound<PyAny>) -> PyResult<BencodeValue> {
     }
 
     // Integers
-    if let Ok(int_val) = obj.extract::<i64>() {
+    if let Ok(int_val) = obj.extract::<isize>() {
         return Ok(BencodeValue::Int(int_val));
     }
 
@@ -77,21 +77,29 @@ fn py_to_bencode_tokens(obj: Bound<PyAny>) -> PyResult<BencodeValue> {
 
 fn bencode_tokens_to_py(py: Python, tokens: BencodeValue) -> PyResult<Bound<PyAny>> {
     match tokens {
-        BencodeValue::Int(i) => Ok(i.into_bound_py_any(py).unwrap()),
-        BencodeValue::Str(s) => Ok(s.into_bound_py_any(py).unwrap()),
+        BencodeValue::Int(i) => i.into_bound_py_any(py),
+        BencodeValue::Str(bytes) => {
+            // Attempt UTF-8 decoding
+            match String::from_utf8(bytes) {
+                Ok(utf8_string) => utf8_string.into_bound_py_any(py),
+                Err(e) => {
+                    // Fall back to bytes for invalid UTF-8
+                    let raw_bytes = e.into_bytes();
+                    raw_bytes.into_bound_py_any(py)
+                }
+            }
+        }
         BencodeValue::List(list) => {
             let py_list = PyList::empty(py);
             for item in list {
-                let py_item = bencode_tokens_to_py(py, item)?;
-                py_list.append(py_item)?;
+                py_list.append(bencode_tokens_to_py(py, item)?)?;
             }
             Ok(py_list.into_any())
         }
         BencodeValue::Dict(dict) => {
             let py_dict = PyDict::new(py);
             for (key, value) in dict {
-                let py_value = bencode_tokens_to_py(py, value)?;
-                py_dict.set_item(key, py_value)?;
+                py_dict.set_item(key, bencode_tokens_to_py(py, value)?)?;
             }
             Ok(py_dict.into_any())
         }
@@ -100,7 +108,7 @@ fn bencode_tokens_to_py(py: Python, tokens: BencodeValue) -> PyResult<Bound<PyAn
 
 #[pymodule(name = "bencode_rs")]
 mod python_bindings {
-    use ::bencode::{decoders::_bencode::decode_bencode, encoders::_bencode::encode_bencode};
+    use ::bencode::{decoders::bencode::decode_bencode, encoders::bencode::encode_bencode};
     use pyo3::exceptions::PyValueError;
     use pyo3::prelude::*;
 
@@ -116,9 +124,8 @@ mod python_bindings {
 
     #[pyfunction]
     fn bdecode<'py>(py: Python<'py>, string: &[u8]) -> PyResult<Bound<'py, PyAny>> {
-        let object = String::from_utf8(string.to_vec()).map_err(|e| PyValueError::new_err(e))?;
         let (decoded_objects, _rest) =
-            decode_bencode(&object).map_err(|e| PyValueError::new_err(e))?;
+            decode_bencode(string).map_err(|e| PyValueError::new_err(e))?;
         let python_objects = bencode_tokens_to_py(py, decoded_objects)?;
         Ok(python_objects)
     }

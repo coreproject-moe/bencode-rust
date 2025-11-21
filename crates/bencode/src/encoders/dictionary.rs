@@ -1,4 +1,4 @@
-use super::_bencode::encode_bencode;
+use super::bencode::encode_bencode;
 use super::string::encode_string;
 use crate::enums::bencode::BencodeValue;
 
