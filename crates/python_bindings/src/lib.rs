@@ -3,6 +3,7 @@ use std::collections::BTreeMap;
 use bencode::enums::bencode::BencodeValue;
 use pyo3::{
     IntoPyObjectExt,
+    exceptions::PyValueError,
     prelude::*,
     types::{PyDict, PyList, PyTuple},
 };
@@ -33,6 +34,12 @@ fn py_to_bencode_tokens(obj: Bound<PyAny>) -> PyResult<BencodeValue> {
 
     // Strings -> UTF-8 bytes
     if let Ok(s) = obj.extract::<String>() {
+        return Ok(BencodeValue::Str(s));
+    }
+
+    // Bytes
+    if let Ok(bytes) = obj.extract::<Vec<u8>>() {
+        let s = bytes.iter().map(|&b| b as char).collect();
         return Ok(BencodeValue::Str(s));
     }
 
@@ -111,7 +118,7 @@ mod python_bindings {
 
     #[pyfunction]
     fn bdecode<'py>(py: Python<'py>, string: &[u8]) -> PyResult<Bound<'py, PyAny>> {
-        let object = String::from_utf8(string.to_vec())?;
+        let object = String::from_utf8(string.to_vec()).map_err(|e| PyValueError::new_err(e))?;
         let (decoded_objects, _rest) =
             decode_bencode(&object).map_err(|e| PyValueError::new_err(e))?;
         let python_objects = bencode_tokens_to_py(py, decoded_objects)?;
