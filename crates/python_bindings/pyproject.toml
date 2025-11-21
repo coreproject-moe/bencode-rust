@@ -18,3 +18,7 @@ build-backend = "maturin"
 
 [dependency-groups]
 dev = ["maturin>=1.10.2"]
+test = [
+    "bencode-py>=4.0.0",
+    "pytest>=8.3.5",
+]

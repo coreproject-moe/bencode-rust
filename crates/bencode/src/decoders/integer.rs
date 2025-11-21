@@ -4,7 +4,15 @@ pub fn decode_integer(data: &str) -> Result<(i64, &str), &'static str> {
     }
     let end = data.find('e').ok_or("Missing 'e' for integer")?;
     let int_part = &data[1..end];
-
+    if int_part.starts_with('0') && int_part.len() > 1 {
+        return Err("Integer cannot start with leading 0");
+    }
+    if int_part.starts_with("-0") && int_part.len() > 1 {
+        return Err("Empty Integer cannot be negative 0");
+    }
+    if int_part.starts_with("-0") && int_part.len() > 2 {
+        return Err("Negative Integer cannot start with leading 0");
+    }
     let value = int_part.parse::<i64>().map_err(|_| "Invalid Integer")?;
     Ok((value, &data[end + 1..]))
 }
@@ -43,5 +51,12 @@ mod tests {
 
         // Invalid integer
         assert!(decode_integer("i4a2e").is_err());
+    }
+
+    #[test]
+    fn test_decode_integer_leading_zero_errors() {
+        assert!(decode_integer("i042e").is_err());
+        assert!(decode_integer("i-042e").is_err());
+        assert!(decode_integer("i-0e").is_err());
     }
 }
