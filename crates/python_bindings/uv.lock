@@ -3,7 +3,7 @@ revision = 3
 requires-python = ">=3.8"
 
 [[package]]
-name = "bencode"
+name = "bencode-rs"
 source = { editable = "." }
 
 [package.dev-dependencies]

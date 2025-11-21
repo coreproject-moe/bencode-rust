@@ -1,5 +1,5 @@
 [project]
-name = "bencode"
+name = "bencode_rs"
 dynamic = ["version"]
 description = "Add your description here"
 readme = "README.md"

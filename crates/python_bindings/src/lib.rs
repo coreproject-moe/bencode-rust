@@ -6,7 +6,7 @@ use pyo3::{
     types::{PyDict, PyList, PyTuple},
 };
 
-fn py_to_bencode(obj: Bound<PyAny>) -> PyResult<BencodeValue> {
+fn py_to_bencode_tokens(obj: Bound<PyAny>) -> PyResult<BencodeValue> {
     // Integers
     if let Ok(int_val) = obj.extract::<i64>() {
         return Ok(BencodeValue::Int(int_val));
@@ -32,7 +32,7 @@ fn py_to_bencode(obj: Bound<PyAny>) -> PyResult<BencodeValue> {
     if let Ok(list) = obj.cast::<PyList>() {
         let mut items = Vec::new();
         for item in list.iter() {
-            items.push(py_to_bencode(item)?);
+            items.push(py_to_bencode_tokens(item)?);
         }
         return Ok(BencodeValue::List(items));
     }
@@ -41,7 +41,7 @@ fn py_to_bencode(obj: Bound<PyAny>) -> PyResult<BencodeValue> {
     if let Ok(tuple) = obj.cast::<PyTuple>() {
         let mut items = Vec::new();
         for item in tuple.iter() {
-            items.push(py_to_bencode(item)?);
+            items.push(py_to_bencode_tokens(item)?);
         }
         return Ok(BencodeValue::List(items));
     }
@@ -66,7 +66,7 @@ fn py_to_bencode(obj: Bound<PyAny>) -> PyResult<BencodeValue> {
                 ));
             };
 
-            let val = py_to_bencode(value)?;
+            let val = py_to_bencode_tokens(value)?;
             map.insert(key_bytes, val);
         }
 
@@ -81,17 +81,17 @@ fn py_to_bencode(obj: Bound<PyAny>) -> PyResult<BencodeValue> {
 }
 
 /// A Python module implemented in Rust.
-#[pymodule]
+#[pymodule(name = "bencode_rs")]
 mod python_bindings {
-    use bencode::encoders::_bencode::encode_bencode;
+    use ::bencode::encoders::_bencode::encode_bencode;
     use pyo3::prelude::*;
 
-    use super::py_to_bencode;
+    use super::py_to_bencode_tokens;
 
     /// Formats the sum of two numbers as string.
     #[pyfunction]
-    fn sum_as_string(obj: Bound<PyAny>) -> PyResult<Vec<u8>> {
-        let objects = py_to_bencode(obj)?;
+    fn bencode(obj: Bound<PyAny>) -> PyResult<Vec<u8>> {
+        let objects = py_to_bencode_tokens(obj)?;
         let encoded = encode_bencode(objects).unwrap();
         let encoded_bytes = encoded.into_bytes();
         Ok(encoded_bytes)
