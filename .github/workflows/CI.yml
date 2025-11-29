@@ -43,12 +43,13 @@ jobs:
                   python-version: 3.x
             - name: Build wheels
               uses: PyO3/maturin-action@v1
-              working-directory: crates/python_bindings
               with:
                   target: ${{ matrix.platform.target }}
                   args: --release --out dist --find-interpreter
                   sccache: ${{ !startsWith(github.ref, 'refs/tags/') }}
                   manylinux: auto
+                  working-directory: crates/python_bindings
+
             - name: Upload wheels
               uses: actions/upload-artifact@v4
               with:
@@ -75,12 +76,13 @@ jobs:
                   python-version: 3.x
             - name: Build wheels
               uses: PyO3/maturin-action@v1
-              working-directory: crates/python_bindings
               with:
                   target: ${{ matrix.platform.target }}
                   args: --release --out dist --find-interpreter
                   sccache: ${{ !startsWith(github.ref, 'refs/tags/') }}
                   manylinux: musllinux_1_2
+                  working-directory: crates/python_bindings
+
             - name: Upload wheels
               uses: actions/upload-artifact@v4
               with:
@@ -104,11 +106,12 @@ jobs:
                   architecture: ${{ matrix.platform.target }}
             - name: Build wheels
               uses: PyO3/maturin-action@v1
-              working-directory: crates/python_bindings
               with:
                   target: ${{ matrix.platform.target }}
                   args: --release --out dist --find-interpreter
                   sccache: ${{ !startsWith(github.ref, 'refs/tags/') }}
+                  working-directory: crates/python_bindings
+
             - name: Upload wheels
               uses: actions/upload-artifact@v4
               with:
@@ -131,11 +134,12 @@ jobs:
                   python-version: 3.x
             - name: Build wheels
               uses: PyO3/maturin-action@v1
-              working-directory: crates/python_bindings
               with:
                   target: ${{ matrix.platform.target }}
                   args: --release --out dist --find-interpreter
                   sccache: ${{ !startsWith(github.ref, 'refs/tags/') }}
+                  working-directory: crates/python_bindings
+
             - name: Upload wheels
               uses: actions/upload-artifact@v4
               with:
@@ -148,11 +152,11 @@ jobs:
             - uses: actions/checkout@v4
             - name: Build sdist
               uses: PyO3/maturin-action@v1
-              working-directory: crates/python_bindings
-
               with:
                   command: sdist
                   args: --out dist
+                  working-directory: crates/python_bindings
+
             - name: Upload sdist
               uses: actions/upload-artifact@v4
               with:
@@ -180,9 +184,9 @@ jobs:
             - name: Publish to PyPI
               if: ${{ startsWith(github.ref, 'refs/tags/') }}
               uses: PyO3/maturin-action@v1
-              working-directory: crates/python_bindings
               env:
                   MATURIN_PYPI_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
               with:
                   command: upload
                   args: --non-interactive --skip-existing wheels-*/*
+                  working-directory: crates/python_bindings
