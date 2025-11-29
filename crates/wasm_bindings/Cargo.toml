@@ -1,0 +1,14 @@
+[package]
+name = "bencode_wasm"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "bencode_wasm"
+crate-type = ["cdylib"]
+
+[dependencies]
+wasm-bindgen = "0.2.106"
+
+[package.metadata.wasm-pack.profile.release]
+wasm-opt = false # https://github.com/llvm/llvm-project/issues/64909

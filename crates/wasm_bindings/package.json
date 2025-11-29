@@ -1,0 +1,21 @@
+{
+    "name": "bencode_wasm",
+    "version": "1.0.0",
+    "type": "module",
+    "description": "A bencode parser written in rust, compiled to wasm",
+    "license": "MIT",
+    "author": "baseplate-admin",
+    "scripts": {
+        "remove": "rimraf pkg",
+        "build:wasm": "wasm-pack build --release",
+        "build": "npm run remove && npm run build:wasm && npm run minify",
+        "minify": "node --experimental-strip-types minify.ts",
+        "optimize": "wasm-opt pkg/bencode_wasm_bg.wasm -O3 -o pkg/bencode_wasm_bg.wasm --enable-bulk-memory-opt"
+    },
+    "devDependencies": {
+        "@types/node": "^24.10.1",
+        "rimraf": "^6.1.2",
+        "terser": "^5.44.1"
+    },
+    "dependencies": {}
+}
