@@ -1,3 +1,4 @@
+use super::dictionary::decode_dictionary;
 use super::integer::decode_integer;
 use super::list::decode_list;
 use super::string::decode_string;
@@ -21,6 +22,13 @@ pub fn decode_bencode(data: &[u8]) -> Result<(BencodeValue, &[u8]), &'static str
             let (list, rest) = decode_list(data)?;
             Ok((BencodeValue::List(list), rest))
         }
-        _ => Err("Unknown type prefix"),
+        b'd' => {
+            let (dict, rest) = decode_dictionary(data)?;
+            Ok((BencodeValue::Dict(dict), rest))
+        }
+        _ => {
+            println!("{:?}", data[0]);
+            Err("Unknown type prefix")
+        }
     }
 }
