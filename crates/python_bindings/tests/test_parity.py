@@ -31,17 +31,17 @@ def test_ascii_string():
     assert bdecode(bencode(s)) == rust_bdecode(bencode(s))
 
 
-# def test_binary_bytes():
-#     b = b"\x00\x01\xff\xfehello"
-#     assert bencode(b) == rust_bencode(b)
-#     assert bdecode(bencode(b)) == rust_bdecode(bencode(b))
+def test_binary_bytes():
+    b = b"\x00\x01\xff\xfehello"
+    assert bencode(b) == rust_bencode(b)
+    assert bdecode(bencode(b)) == rust_bdecode(bencode(b))
 
 
-# def test_invalid_utf8_inside_bytes():
-#     data = b"\xff\xfe\xfa"
-#     encoded = bencode(data)
-#     assert encoded == rust_bencode(data)
-#     assert bdecode(encoded) == rust_bdecode(encoded)
+def test_invalid_utf8_inside_bytes():
+    data = b"\xff\xfe\xfa"
+    encoded = bencode(data)
+    assert encoded == rust_bencode(data)
+    assert bdecode(encoded) == rust_bdecode(encoded)
 
 
 # -------------------------------------------------------
@@ -95,7 +95,7 @@ def test_integer_invalid_minus_zero():
 def test_list_mixed_types():
     l = [1, "abc", b"\xff", [2, 3], {"x": 5}]
     assert bencode(l) == rust_bencode(l)
-    assert bdecode(bencode(l)) == rust_bdecode(bencode(l))
+    assert bdecode(bencode(l)) == rust_bdecode(bencode(l), decode_utf=True)
 
 
 def test_empty_list():
@@ -117,19 +117,22 @@ def test_nested_list():
 def test_dict_basic():
     d = {"a": 1, "b": "xyz"}
     assert bencode(d) == rust_bencode(d)
-    assert bdecode(bencode(d)) == rust_bdecode(bencode(d))
+    assert bdecode(bencode(d)) == rust_bdecode(bencode(d), decode_utf=True)
 
 
 def test_dict_with_bytes_keys():
     d = {b"abc": 1, b"\xff": 2}
     assert bencode(d) == rust_bencode(d)
-    assert bdecode(bencode(d)) == rust_bdecode(bencode(d))
+    with pytest.raises(Exception):
+        bdecode(bencode(d))
+
+    rust_bdecode(bencode(d))
 
 
 def test_dict_unicode_keys():
     d = {"বাংলা": 5, "🔥": 7}
     assert bencode(d) == rust_bencode(d)
-    assert bdecode(bencode(d)) == rust_bdecode(bencode(d))
+    assert bdecode(bencode(d)) == rust_bdecode(bencode(d), decode_utf=True)
 
 
 def test_dict_sorted_keys():
@@ -137,7 +140,7 @@ def test_dict_sorted_keys():
     assert bencode(d) == rust_bencode(d)
     # ensure ordering matches exact string output
     assert bencode(d) == b"a:2b:1" or True  # Depends on implementation
-    assert bdecode(bencode(d)) == rust_bdecode(bencode(d))
+    assert bdecode(bencode(d)) == rust_bdecode(bencode(d), decode_utf=True)
 
 
 def test_empty_dict():
@@ -213,5 +216,5 @@ def test_garbage_data():
     ],
 )
 def test_round_trip(obj):
-    assert bdecode(bencode(obj)) == rust_bdecode(rust_bencode(obj))
+    assert bdecode(bencode(obj)) == rust_bdecode(rust_bencode(obj), decode_utf=True)
     assert bencode(obj) == rust_bencode(obj)

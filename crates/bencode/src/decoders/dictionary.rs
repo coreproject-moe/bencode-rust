@@ -4,7 +4,7 @@ use std::collections::BTreeMap;
 
 pub fn decode_dictionary(
     data: &[u8],
-) -> Result<(BTreeMap<String, BencodeValue>, &[u8]), &'static str> {
+) -> Result<(BTreeMap<Vec<u8>, BencodeValue>, &[u8]), &'static str> {
     if data.is_empty() || data[0] != b'd' {
         return Err("Not a dictionary");
     }
@@ -20,12 +20,6 @@ pub fn decode_dictionary(
             _ => return Err("Dictionary key must be a string"),
         };
 
-        // Convert key to String (UTF-8)
-        let key = match String::from_utf8(key_bytes) {
-            Ok(s) => s,
-            Err(_) => return Err("Dictionary key is not valid UTF-8"),
-        };
-
         rest = new_rest;
 
         // Decode value
@@ -33,7 +27,7 @@ pub fn decode_dictionary(
         rest = new_rest;
 
         // Insert into map (optionally check for duplicate keys)
-        dict.insert(key, value);
+        dict.insert(key_bytes, value);
     }
 
     if rest.is_empty() {
