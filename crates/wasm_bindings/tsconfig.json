@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "target": "ESNext",
+        "module": "ESNext",
+        "moduleResolution": "Node",
+        "esModuleInterop": true,
+        "allowJs": true,
+        "strict": true,
+        "baseUrl": ".",
+        "paths": {
+            "bencode_wasm": ["./pkg/bencode_wasm.js"]
+        }
+    },
+    "include": ["src", "tests"]
+}

@@ -8,14 +8,17 @@
     "scripts": {
         "remove": "rimraf pkg",
         "build:wasm": "wasm-pack build --release",
-        "build": "npm run remove && npm run build:wasm && npm run minify",
+        "build": "npm run remove && npm run build:wasm",
         "minify": "node --experimental-strip-types minify.ts",
-        "optimize": "wasm-opt pkg/bencode_wasm_bg.wasm -O3 -o pkg/bencode_wasm_bg.wasm --enable-bulk-memory-opt"
+        "optimize": "wasm-opt pkg/bencode_wasm_bg.wasm -O3 -o pkg/bencode_wasm_bg.wasm --enable-bulk-memory-opt",
+        "test": "vitest"
     },
     "devDependencies": {
         "@types/node": "^24.10.1",
         "rimraf": "^6.1.2",
-        "terser": "^5.44.1"
-    },
-    "dependencies": {}
+        "terser": "^5.44.1",
+        "vite-plugin-wasm": "^3.5.0",
+        "vite-tsconfig-paths": "^5.1.4",
+        "vitest": "^4.0.14"
+    }
 }
