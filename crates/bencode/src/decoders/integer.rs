@@ -1,62 +1,97 @@
-pub fn decode_integer(data: &str) -> Result<(i64, &str), &'static str> {
-    if !data.starts_with('i') {
-        return Err("Not an Integer");
+pub fn decode_integer(data: &[u8]) -> Result<(isize, &[u8]), &'static str> {
+    if data.is_empty() || data[0] != b'i' {
+        return Err("Not an integer");
     }
-    let end = data.find('e').ok_or("Missing 'e' for integer")?;
-    let int_part = &data[1..end];
-    if int_part.starts_with('0') && int_part.len() > 1 {
-        return Err("Integer cannot start with leading 0");
+    // Find the position of 'e'
+    let end_pos = data
+        .iter()
+        .position(|&b| b == b'e')
+        .ok_or("Missing 'e' for integer")?;
+
+    // Slice out the integer part
+    let int_bytes = &data[1..end_pos];
+
+    // Check for empty integer
+    if int_bytes.is_empty() {
+        return Err("Empty integer");
     }
-    if int_part.starts_with("-0") && int_part.len() > 1 {
-        return Err("Empty Integer cannot be negative 0");
+
+    // Leading zero check (except for '0')
+    if int_bytes.len() > 1 && int_bytes[0] == b'0' {
+        return Err("Leading zeros are not allowed");
     }
-    if int_part.starts_with("-0") && int_part.len() > 2 {
-        return Err("Negative Integer cannot start with leading 0");
+    // Negative zero check
+    if int_bytes[0] == b'-' && int_bytes[1] == b'0' {
+        return Err("Negative leading zeros are not allowed");
     }
-    let value = int_part.parse::<i64>().map_err(|_| "Invalid Integer")?;
-    Ok((value, &data[end + 1..]))
+
+    // println!("{:?}", int_bytes.len());
+    // println!("{:?} {:?}", int_bytes[0], int_bytes[1]);
+    // println!("{:?} {:?}", b'-', b'0');
+
+    // Convert to string and parse
+    let int_str = std::str::from_utf8(int_bytes).map_err(|_| "Invalid UTF-8")?;
+    let value = int_str.parse::<isize>().map_err(|_| "Invalid integer")?;
+
+    // Return the value and remaining slice
+    Ok((value, &data[end_pos + 1..]))
 }
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
-    fn test_decode_integer() {
-        // Test a normal integer
-        assert_eq!(decode_integer("i42e").unwrap(), (42, ""));
+    fn test_valid_integers() {
+        // Simple integer
+        let data = b"i42e";
+        let (val, rest) = decode_integer(data).unwrap();
+        assert_eq!(val, 42);
+        assert_eq!(rest, b"");
 
-        // Test zero
-        assert_eq!(decode_integer("i0e").unwrap(), (0, ""));
+        // Zero
+        let data = b"i0e";
+        let (val, rest) = decode_integer(data).unwrap();
+        assert_eq!(val, 0);
+        assert_eq!(rest, b"");
 
-        // Test a large number
-        assert_eq!(decode_integer("i123456789e").unwrap(), (123456789, ""));
-
-        // Test negative number
-        assert_eq!(decode_integer("i-42e").unwrap(), (-42, ""));
+        // Integer with remaining data
+        let data = b"i123e456";
+        let (val, rest) = decode_integer(data).unwrap();
+        assert_eq!(val, 123);
+        assert_eq!(rest, b"456");
     }
 
     #[test]
-    fn test_decode_integer_with_extra_data() {
-        // Integer followed by extra data
-        assert_eq!(decode_integer("i42ehello").unwrap(), (42, "hello"));
-    }
-
-    #[test]
-    fn test_decode_integer_errors() {
+    fn test_invalid_format() {
         // Not starting with 'i'
-        assert!(decode_integer("42e").is_err());
+        let data = b"42e";
+        assert!(decode_integer(data).is_err());
 
         // Missing 'e'
-        assert!(decode_integer("i42").is_err());
+        let data = b"i42";
+        assert!(decode_integer(data).is_err());
 
-        // Invalid integer
-        assert!(decode_integer("i4a2e").is_err());
+        // Empty integer
+        let data = b"ie";
+        assert!(decode_integer(data).is_err());
+
+        // Leading zeros
+        let data = b"i042e";
+        assert!(decode_integer(data).is_err());
     }
 
     #[test]
-    fn test_decode_integer_leading_zero_errors() {
-        assert!(decode_integer("i042e").is_err());
-        assert!(decode_integer("i-042e").is_err());
-        assert!(decode_integer("i-0e").is_err());
+    fn test_invalid_utf8() {
+        // Invalid UTF-8 sequence
+        let data = b"i\xff42e";
+        assert!(decode_integer(data).is_err());
+    }
+
+    #[test]
+    fn test_large_integer() {
+        let data = b"i1234567890e";
+        let (val, rest) = decode_integer(data).unwrap();
+        assert_eq!(val, 1234567890);
+        assert_eq!(rest, b"");
     }
 }

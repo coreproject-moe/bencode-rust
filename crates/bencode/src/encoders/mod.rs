@@ -1,4 +1,4 @@
-pub mod _bencode;
+pub mod bencode;
 pub mod dictionary;
 pub mod integer;
 pub mod list;

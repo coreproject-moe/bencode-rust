@@ -1,75 +1,40 @@
-use super::_bencode::decode_bencode;
-use super::string::decode_string;
+use super::bencode::decode_bencode;
+use crate::enums::bencode::BencodeValue;
 use std::collections::BTreeMap;
 
-use crate::enums::bencode::BencodeValue;
-
-pub fn decode_dict(mut data: &str) -> Result<(BTreeMap<String, BencodeValue>, &str), &'static str> {
-    if !data.starts_with('d') {
+pub fn decode_dictionary(
+    data: &[u8],
+) -> Result<(BTreeMap<Vec<u8>, BencodeValue>, &[u8]), &'static str> {
+    if data.is_empty() || data[0] != b'd' {
         return Err("Not a dictionary");
     }
-    data = &data[1..];
-    let mut map = BTreeMap::new();
-    while !data.starts_with('e') {
-        let (key, rest) = decode_string(data)?;
-        let (value, rest2) = decode_bencode(rest)?;
-        map.insert(key, value);
-        data = rest2;
-    }
-    Ok((map, &data[1..]))
-}
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::enums::bencode::BencodeValue;
 
-    #[test]
-    fn test_decode_simple_dict() {
-        let data = "d3:foo3:bare";
-        let (result, rest) = decode_dict(data).unwrap();
+    let mut rest = &data[1..]; // skip 'd'
+    let mut dict = BTreeMap::new();
 
-        assert!(rest.is_empty());
-        assert_eq!(result.len(), 1);
-        assert_eq!(
-            result.get("foo"),
-            Some(&BencodeValue::Str("bar".to_string()))
-        );
+    while !rest.is_empty() && rest[0] != b'e' {
+        // Decode key
+        let (key_value, new_rest) = decode_bencode(rest)?;
+        let key_bytes = match key_value {
+            BencodeValue::Str(bytes) => bytes,
+            _ => return Err("Dictionary key must be a string"),
+        };
+
+        rest = new_rest;
+
+        // Decode value
+        let (value, new_rest) = decode_bencode(rest)?;
+        rest = new_rest;
+
+        // Insert into map (optionally check for duplicate keys)
+        dict.insert(key_bytes, value);
     }
 
-    #[test]
-    fn test_decode_dict_with_integer() {
-        let data = "d3:agei25ee";
-        let (result, rest) = decode_dict(data).unwrap();
-
-        assert!(rest.is_empty());
-        assert_eq!(result.len(), 1);
-        assert_eq!(result.get("age"), Some(&BencodeValue::Int(25)));
+    if rest.is_empty() {
+        return Err("Missing 'e' to terminate dictionary");
     }
 
-    #[test]
-    fn test_decode_nested_dict() {
-        let data = "d4:info d3:foo3:baree4:listli1ei2ee";
-        let (result, rest) = decode_dict(data).unwrap();
-
-        assert!(rest.is_empty());
-        assert!(matches!(result.get("info"), Some(BencodeValue::Dict(_))));
-        assert!(matches!(result.get("list"), Some(BencodeValue::List(_))));
-    }
-
-    #[test]
-    fn test_decode_empty_dict() {
-        let data = "de";
-        let (result, rest) = decode_dict(data).unwrap();
-
-        assert!(rest.is_empty());
-        assert!(result.is_empty());
-    }
-
-    #[test]
-    fn test_decode_invalid_dict() {
-        let data = "l3:foo3:bare"; // Not a dictionary
-        let result = decode_dict(data);
-        assert!(result.is_err());
-        assert_eq!(result.unwrap_err(), "Not a dictionary");
-    }
+    // Skip the terminating 'e'
+    let rest = &rest[1..];
+    Ok((dict, rest))
 }

@@ -1,17 +1,19 @@
-use super::_bencode::encode_bencode;
+use super::bencode::encode_bencode;
 use crate::enums::bencode::BencodeValue;
 
-pub fn encode_list(data: Vec<BencodeValue>) -> Result<String, &'static str> {
-    let mut encoded = String::from("l");
-    for item in data {
-        // Encode each item based on its type.
-        let item_str = encode_bencode(item)?;
-        encoded.push_str(&item_str);
-    }
-    encoded.push('e');
+pub fn encode_list(data: Vec<BencodeValue>) -> Result<Vec<u8>, &'static str> {
+    let mut encoded = Vec::new();
+    encoded.push(b'l');
 
+    for item in data {
+        let item_bytes = encode_bencode(item)?;
+        encoded.extend(item_bytes);
+    }
+
+    encoded.push(b'e');
     Ok(encoded)
 }
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -20,11 +22,11 @@ mod tests {
     fn test_encode_simple_list() {
         let list = vec![
             BencodeValue::Int(42),
-            BencodeValue::Str("hello".to_string()),
+            BencodeValue::Str("hello".as_bytes().to_vec()),
         ];
 
         let encoded = encode_list(list).unwrap();
-        assert_eq!(encoded, "li42e5:helloe");
+        assert_eq!(encoded, b"li42e5:helloe".to_vec());
     }
 
     #[test]
@@ -33,29 +35,30 @@ mod tests {
             BencodeValue::Int(1),
             BencodeValue::List(vec![
                 BencodeValue::Int(2),
-                BencodeValue::Str("nested".to_string()),
+                BencodeValue::Str("nested".as_bytes().to_vec()),
             ]),
-            BencodeValue::Str("end".to_string()),
+            BencodeValue::Str("end".as_bytes().to_vec()),
         ];
 
         let encoded = encode_list(nested_list).unwrap();
-        assert_eq!(encoded, "li1eli2e6:nestede3:ende");
+        assert_eq!(encoded, b"li1eli2e6:nestede3:ende".to_vec());
     }
 
     #[test]
     fn test_empty_list() {
         let empty: Vec<BencodeValue> = vec![];
         let encoded = encode_list(empty).unwrap();
-        assert_eq!(encoded, "le");
+        assert_eq!(encoded, b"le".to_vec());
     }
 
     #[test]
-    fn test_list_with_only_strings() {
+    fn test_list_with_mixed_types() {
+        // Renamed from "only_strings" to reflect actual content
         let list = vec![
-            BencodeValue::Str("bencode".to_string()),
+            BencodeValue::Str("bencode".as_bytes().to_vec()),
             BencodeValue::Int(-20),
         ];
         let encoded = encode_list(list).unwrap();
-        assert_eq!(encoded, "l7:bencodei-20ee");
+        assert_eq!(encoded, b"l7:bencodei-20ee".to_vec());
     }
 }
