@@ -1,6 +1,5 @@
-use super::bencode::encode_bencode;
 use super::string::encode_string;
-use crate::enums::bencode::BencodeValue;
+use crate::{dispatcher::bencode::encode_bencode, enums::bencode::BencodeValue};
 
 use std::collections::BTreeMap;
 

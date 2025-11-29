@@ -1,8 +1,4 @@
-use super::dictionary::decode_dictionary;
-use super::integer::decode_integer;
-use super::list::decode_list;
-use super::string::decode_string;
-use crate::enums::bencode::BencodeValue;
+use crate::{decoders::{dictionary::decode_dictionary, integer::decode_integer, list::decode_list, string::decode_string}, enums::bencode::BencodeValue};
 
 pub fn decode_bencode(data: &[u8]) -> Result<(BencodeValue, &[u8]), &'static str> {
     if data.is_empty() {

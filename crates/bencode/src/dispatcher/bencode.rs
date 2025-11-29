@@ -1,8 +1,9 @@
-use super::dictionary::encode_dict;
-use super::integer::encode_integer;
-use super::list::encode_list;
-use super::string::encode_string;
-use crate::enums::bencode::BencodeValue;
+use crate::{
+    encoders::{
+        dictionary::encode_dict, integer::encode_integer, list::encode_list, string::encode_string,
+    },
+    enums::bencode::BencodeValue,
+};
 
 pub fn encode_bencode(value: BencodeValue) -> Result<Vec<u8>, &'static str> {
     match value {

@@ -1,5 +1,4 @@
-use super::bencode::decode_bencode;
-use crate::enums::bencode::BencodeValue;
+use crate::{dispatcher::bdecode::decode_bencode, enums::bencode::BencodeValue};
 
 pub fn decode_list(data: &[u8]) -> Result<(Vec<BencodeValue>, &[u8]), &'static str> {
     if data.is_empty() || data[0] != b'l' {

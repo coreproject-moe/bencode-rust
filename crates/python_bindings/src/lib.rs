@@ -143,7 +143,7 @@ fn bencode_tokens_to_py(
 
 #[pymodule(name = "bencode_rs")]
 mod python_bindings {
-    use ::bencode::{decoders::bencode::decode_bencode, encoders::bencode::encode_bencode};
+    use ::bencode::dispatcher::{bdecode::decode_bencode, bencode::encode_bencode};
     use pyo3::exceptions::PyValueError;
     use pyo3::prelude::*;
 

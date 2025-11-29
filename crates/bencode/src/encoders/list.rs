@@ -1,5 +1,4 @@
-use super::bencode::encode_bencode;
-use crate::enums::bencode::BencodeValue;
+use crate::{dispatcher::bencode::encode_bencode, enums::bencode::BencodeValue};
 
 pub fn encode_list(data: Vec<BencodeValue>) -> Result<Vec<u8>, &'static str> {
     let mut encoded = Vec::new();

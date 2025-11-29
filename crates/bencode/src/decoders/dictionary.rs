@@ -1,5 +1,4 @@
-use super::bencode::decode_bencode;
-use crate::enums::bencode::BencodeValue;
+use crate::{dispatcher::bdecode::decode_bencode, enums::bencode::BencodeValue};
 use std::collections::BTreeMap;
 
 pub fn decode_dictionary(
