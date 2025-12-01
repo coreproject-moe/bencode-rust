@@ -1,0 +1,9 @@
+version: 2
+
+build:
+    os: ubuntu-latest
+    tools:
+        nodejs: '24'
+    commands:
+        - mkdir --parents _readthedocs/html/
+        - cp --recursive docs/* _readthedocs/html/

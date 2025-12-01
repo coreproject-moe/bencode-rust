@@ -1,0 +1,12 @@
+{
+    "dependencies": {
+        "docsify-cli": "^4.4.4",
+        "docsify-darklight-theme": "^3.2.0"
+    },
+    "scripts": {
+        "gen": "docsify init ./docs",
+        "serve": "docsify serve ./docs",
+        "build": "docsify build ./docs  _build/html/",
+        "dark": "docsify-darklight-theme"
+    }
+}
