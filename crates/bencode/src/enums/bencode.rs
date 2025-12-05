@@ -1,6 +1,6 @@
 use std::collections::BTreeMap;
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq, Clone)]
 pub enum BencodeValue {
     Int(isize),
     Str(Vec<u8>),
