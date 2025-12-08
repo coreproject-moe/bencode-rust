@@ -52,7 +52,7 @@ jobs:
                   working-directory: crates/python_bindings
 
             - name: Setup uv
-              uses: astral-sh/uv@v1
+              uses: astral-sh/uv@v6
 
             - name: Install test dependencies
               run: uv install pytest
@@ -95,7 +95,7 @@ jobs:
                   working-directory: crates/python_bindings
 
             - name: Setup uv
-              uses: astral-sh/uv@v1
+              uses: astral-sh/uv@v6
 
             - name: Install test dependencies
               run: uv install pytest
@@ -134,7 +134,7 @@ jobs:
                   working-directory: crates/python_bindings
 
             - name: Setup uv
-              uses: astral-sh/uv@v1
+              uses: astral-sh/uv@v6
 
             - name: Install test dependencies
               run: uv install pytest
@@ -172,7 +172,7 @@ jobs:
                   working-directory: crates/python_bindings
 
             - name: Setup uv
-              uses: astral-sh/uv@v1
+              uses: astral-sh/uv@v6
 
             - name: Install test dependencies
               run: uv install pytest
