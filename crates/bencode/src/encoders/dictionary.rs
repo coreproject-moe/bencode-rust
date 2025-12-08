@@ -43,7 +43,7 @@ mod tests {
         );
         dict.insert(b"meaning".to_vec(), BencodeValue::Int(42));
         let encoded = encode_dict(dict).unwrap();
-        assert_eq!(encoded, b"d4:wiki7:bencode7:meaningi42ee".to_vec());
+        assert_eq!(encoded, b"d7:meaningi42e4:wiki7:bencodee".to_vec());
     }
 
     #[test]
