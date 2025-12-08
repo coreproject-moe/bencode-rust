@@ -24,17 +24,17 @@ jobs:
         strategy:
             matrix:
                 platform:
-                    - runner: ubuntu-latest
+                    - runner: ubuntu-22.04
                       target: x86_64
-                    - runner: ubuntu-latest
+                    - runner: ubuntu-22.04
                       target: x86
-                    - runner: ubuntu-latest
+                    - runner: ubuntu-22.04
                       target: aarch64
-                    - runner: ubuntu-latest
+                    - runner: ubuntu-22.04
                       target: armv7
-                    - runner: ubuntu-latest
+                    - runner: ubuntu-22.04
                       target: s390x
-                    - runner: ubuntu-latest
+                    - runner: ubuntu-22.04
                       target: ppc64le
         steps:
             - uses: actions/checkout@v4
@@ -45,39 +45,30 @@ jobs:
             - name: Build wheels
               uses: PyO3/maturin-action@v1
               with:
+                  path: crates/python_binding
                   target: ${{ matrix.platform.target }}
                   args: --release --out dist --find-interpreter
                   sccache: ${{ !startsWith(github.ref, 'refs/tags/') }}
                   manylinux: auto
-                  working-directory: crates/python_bindings
-
-            - name: Setup uv
-              uses: astral-sh/uv@v6
-
-            - name: Install test dependencies
-              run: uv install pytest
-
-            - name: Run pytest
-              run: pytest -q
 
             - name: Upload wheels
               uses: actions/upload-artifact@v4
               with:
                   name: wheels-linux-${{ matrix.platform.target }}
-                  path: dist
+                  path: crates/python_binding/dist
 
     musllinux:
         runs-on: ${{ matrix.platform.runner }}
         strategy:
             matrix:
                 platform:
-                    - runner: ubuntu-latest
+                    - runner: ubuntu-22.04
                       target: x86_64
-                    - runner: ubuntu-latest
+                    - runner: ubuntu-22.04
                       target: x86
-                    - runner: ubuntu-latest
+                    - runner: ubuntu-22.04
                       target: aarch64
-                    - runner: ubuntu-latest
+                    - runner: ubuntu-22.04
                       target: armv7
         steps:
             - uses: actions/checkout@v4
@@ -88,26 +79,17 @@ jobs:
             - name: Build wheels
               uses: PyO3/maturin-action@v1
               with:
+                  path: crates/python_binding
                   target: ${{ matrix.platform.target }}
                   args: --release --out dist --find-interpreter
                   sccache: ${{ !startsWith(github.ref, 'refs/tags/') }}
                   manylinux: musllinux_1_2
-                  working-directory: crates/python_bindings
-
-            - name: Setup uv
-              uses: astral-sh/uv@v6
-
-            - name: Install test dependencies
-              run: uv install pytest
-
-            - name: Run pytest
-              run: pytest -q
 
             - name: Upload wheels
               uses: actions/upload-artifact@v4
               with:
                   name: wheels-musllinux-${{ matrix.platform.target }}
-                  path: dist
+                  path: crates/python_binding/dist
 
     windows:
         runs-on: ${{ matrix.platform.runner }}
@@ -128,25 +110,16 @@ jobs:
             - name: Build wheels
               uses: PyO3/maturin-action@v1
               with:
+                  path: crates/python_binding
                   target: ${{ matrix.platform.target }}
                   args: --release --out dist --find-interpreter
                   sccache: ${{ !startsWith(github.ref, 'refs/tags/') }}
-                  working-directory: crates/python_bindings
-
-            - name: Setup uv
-              uses: astral-sh/uv@v6
-
-            - name: Install test dependencies
-              run: uv install pytest
-
-            - name: Run pytest
-              run: pytest -q
 
             - name: Upload wheels
               uses: actions/upload-artifact@v4
               with:
                   name: wheels-windows-${{ matrix.platform.target }}
-                  path: dist
+                  path: crates/python_binding/dist
 
     macos:
         runs-on: ${{ matrix.platform.runner }}
@@ -166,25 +139,16 @@ jobs:
             - name: Build wheels
               uses: PyO3/maturin-action@v1
               with:
+                  path: crates/python_binding
                   target: ${{ matrix.platform.target }}
                   args: --release --out dist --find-interpreter
                   sccache: ${{ !startsWith(github.ref, 'refs/tags/') }}
-                  working-directory: crates/python_bindings
-
-            - name: Setup uv
-              uses: astral-sh/uv@v6
-
-            - name: Install test dependencies
-              run: uv install pytest
-
-            - name: Run pytest
-              run: pytest -q
 
             - name: Upload wheels
               uses: actions/upload-artifact@v4
               with:
                   name: wheels-macos-${{ matrix.platform.target }}
-                  path: dist
+                  path: crates/python_binding/dist
 
     sdist:
         runs-on: ubuntu-latest
@@ -194,15 +158,15 @@ jobs:
             - name: Build sdist
               uses: PyO3/maturin-action@v1
               with:
+                  path: crates/python_binding
                   command: sdist
                   args: --out dist
-                  working-directory: crates/python_bindings
 
             - name: Upload sdist
               uses: actions/upload-artifact@v4
               with:
                   name: wheels-sdist
-                  path: dist
+                  path: crates/python_binding/dist
 
     release:
         name: Release
@@ -213,21 +177,8 @@ jobs:
             id-token: write
             contents: write
             attestations: write
-
         steps:
             - uses: actions/download-artifact@v4
 
             - name: Generate artifact attestation
-              uses: actions/attest-build-provenance@v2
-              with:
-                  subject-path: 'wheels-*/*'
-
-            - name: Publish to PyPI
-              if: ${{ startsWith(github.ref, 'refs/tags/') }}
-              uses: PyO3/maturin-action@v1
-              env:
-                  MATURIN_PYPI_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
-              with:
-                  command: upload
-                  args: --non-interactive --skip-existing wheels-*/*
-                  working-directory: crates/python_bindings
+              uses: actions/a

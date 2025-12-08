@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="71.164368mm"
+   height="71.164368mm"
+   viewBox="0 0 71.164368 71.164368"
+   version="1.1"
+   id="svg1"
+   xml:space="preserve"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+
+  <style>
+    svg { color: black; }
+    @media (prefers-color-scheme: dark) {
+      svg { color: white; }
+    }
+  </style>
+
+  <defs id="defs1">
+    <marker
+       style="overflow:visible"
+       id="marker51"
+       refX="0"
+       refY="0"
+       orient="auto-start-reverse"
+       markerWidth="1"
+       markerHeight="1"
+       viewBox="0 0 1 1"
+       preserveAspectRatio="xMidYMid">
+      <path
+         style="fill:none;stroke:currentColor;stroke-width:1;stroke-linecap:round"
+         d="M 3,-3 0,0 3,3"
+         transform="rotate(180,0.125,0)"
+      />
+    </marker>
+
+    <marker
+       style="overflow:visible"
+       id="ArrowWideRounded"
+       refX="0"
+       refY="0"
+       orient="auto-start-reverse"
+       markerWidth="1"
+       markerHeight="1"
+       viewBox="0 0 1 1"
+       preserveAspectRatio="xMidYMid">
+      <path
+         style="fill:none;stroke:currentColor;stroke-width:1;stroke-linecap:round"
+         d="M 3,-3 0,0 3,3"
+         transform="rotate(180,0.125,0)"
+      />
+    </marker>
+
+    <mask id="holes">
+      <rect x="-60" y="-60" width="120" height="120" fill="#ffffff" />
+      <circle id="hole" cy="-40" r="3" cx="0" />
+      <use xlink:href="#hole" transform="rotate(72)" />
+      <use xlink:href="#hole" transform="rotate(144)" />
+      <use xlink:href="#hole" transform="rotate(-144)" />
+      <use xlink:href="#hole" transform="rotate(-72)" />
+    </mask>
+  </defs>
+
+  <g id="layer1" transform="translate(-65.028617,-58.75453)">
+    <circle
+       style="fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-dasharray:2, 4;paint-order:stroke markers fill"
+       cx="100.61095"
+       cy="94.336861"
+       r="34.582191"
+    />
+
+    <g transform="translate(0.76716243,1.7261155)">
+      <!-- Folder icon -->
+      <g
+         style="fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"
+         transform="matrix(0.49795083,0,0,0.61513099,93.231333,69.215737)">
+        <path d="M 4,12.15 V 4 A 2,2 0 0 1 6,2 h 8 a 2.4,2.4 0 0 1 1.706,0.706 l 3.588,3.588 A 2.4,2.4 0 0 1 20,8 v 12 a 2,2 0 0 1 -2,2 h -3.35"/>
+        <path d="m 14,2 v 5 a 1,1 0 0 0 1,1 h 5"/>
+        <path d="m 5,16 -3,3 3,3"/>
+        <path d="M 9,22 12,19 9,16"/>
+      </g>
+
+      <!-- Arrows  line -->
+      <g transform="matrix(0.49744125,0,0,0.49744125,49.004578,15.119826)">
+        <path
+           style="fill:none;stroke:currentColor;stroke-width:0.889;stroke-dasharray:3.556, 0.889;marker-end:url(#marker51)"
+           d="m 92.941302,126.05832 c -22.646375,16.53701 -34.978445,34.30019 0,57.6877" />
+        <path
+           style="fill:none;stroke:currentColor;stroke-width:0.889;stroke-dasharray:3.556, 0.889;marker-start:url(#ArrowWideRounded)"
+           d="m 110.51005,126.69477 c 26.3269,20.93385 30.18667,40.413 0,57.6877" />
+      </g>
+
+      <!-- Barcode–like icon -->
+      <g
+         style="fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"
+         transform="matrix(0.52623205,0,0,0.52623205,93.525974,100.58814)">
+        <rect x="14" y="14" width="4" height="6" rx="2"/>
+        <rect x="6" y="4" width="4" height="6" rx="2"/>
+        <path d="m 6,20 h 4"/>
+        <path d="m 14,10 h 4"/>
+        <path d="m 6,14 h 2 v 6"/>
+        <path d="m 14,4 h 2 v 6"/>
+      </g>
+
+      <!-- Double arrow -->
+      <g
+         style="fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"
+         transform="matrix(0.60706656,0,0,0.60706656,92.095682,85.994516)">
+        <path d="M 16,18 22,12 16,6"/>
+        <path d="m 8,6 -6,6 6,6"/>
+      </g>
+    </g>
+  </g>
+</svg>

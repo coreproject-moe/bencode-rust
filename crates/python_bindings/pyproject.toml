@@ -1,9 +1,9 @@
 [project]
-name = "bencode_rs"
+name = "bencode_rust"
 dynamic = ["version"]
-description = "Add your description here"
+description = "A modern bencode parser written from scratch for the next generation of torrent streaming"
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 dependencies = []
 classifiers = [
     "Programming Language :: Rust",
@@ -18,7 +18,4 @@ build-backend = "maturin"
 
 [dependency-groups]
 dev = ["maturin>=1.10.2"]
-test = [
-    "bencode-py>=4.0.0",
-    "pytest>=8.3.5",
-]
+test = ["bencode-py>=4.0.0", "pytest>=8.3.5"]
