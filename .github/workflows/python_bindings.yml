@@ -57,9 +57,6 @@ jobs:
             - name: Install test dependencies
               run: uv install pytest
 
-            - name: Install built wheel
-              run: uv install dist/*.whl
-
             - name: Run pytest
               run: pytest -q
 
@@ -103,9 +100,6 @@ jobs:
             - name: Install test dependencies
               run: uv install pytest
 
-            - name: Install built wheel
-              run: uv install dist/*.whl
-
             - name: Run pytest
               run: pytest -q
 
@@ -145,9 +139,6 @@ jobs:
             - name: Install test dependencies
               run: uv install pytest
 
-            - name: Install built wheel
-              run: uv install dist/*.whl
-
             - name: Run pytest
               run: pytest -q
 
@@ -185,9 +176,6 @@ jobs:
 
             - name: Install test dependencies
               run: uv install pytest
-
-            - name: Install built wheel
-              run: uv install dist/*.whl
 
             - name: Run pytest
               run: pytest -q
