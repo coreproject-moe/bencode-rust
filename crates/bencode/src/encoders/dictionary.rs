@@ -8,11 +8,9 @@ pub fn encode_dict(data: BTreeMap<Vec<u8>, BencodeValue>) -> Result<Vec<u8>, &'s
     encoded.push(b'd');
 
     for (key, value) in data.into_iter() {
-        // Encode key as byte string (bencode requires keys to be byte strings)
         let encoded_key = encode_string(key)?;
         encoded.extend(encoded_key);
 
-        // Encode value based on its type
         let encoded_value = encode_bencode(value)?;
         encoded.extend(encoded_value);
     }

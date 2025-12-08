@@ -25,10 +25,6 @@ pub fn decode_integer(data: &[u8]) -> Result<(isize, &[u8]), &'static str> {
         return Err("Negative leading zeros are not allowed");
     }
 
-    // println!("{:?}", int_bytes.len());
-    // println!("{:?} {:?}", int_bytes[0], int_bytes[1]);
-    // println!("{:?} {:?}", b'-', b'0');
-
     // Convert to string and parse
     let int_str = std::str::from_utf8(int_bytes).map_err(|_| "Invalid UTF-8")?;
     let value = int_str.parse::<isize>().map_err(|_| "Invalid integer")?;

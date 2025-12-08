@@ -2,7 +2,7 @@ pub fn decode_string(data: &[u8]) -> Result<(Vec<u8>, &[u8]), &'static str> {
     // Find the colon separating length from content
     let colon_pos = data.iter().position(|&b| b == b':').ok_or("Missing ':'")?;
 
-    // Parse length as bytes, no UTF-8 conversion needed for digits
+    // Parse length as bytes, no UTF-8 conversion
     if colon_pos == 0 {
         return Err("Empty length");
     }
