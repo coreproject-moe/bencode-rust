@@ -12,7 +12,7 @@ pub fn decode_bencode(data: &[u8]) -> Result<(BencodeValue, &[u8]), &'static str
     }
 
     match data[0] {
-        b if (b'0'..=b'9').contains(&b) => {
+        b if b.is_ascii_digit() => {
             let (bytes, rest) = decode_string(data)?;
             Ok((BencodeValue::Str(bytes), rest))
         }

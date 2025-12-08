@@ -80,10 +80,8 @@ fn bencode_to_js(value: BencodeValue, decode_utf: Option<bool>) -> JsValue {
         BencodeValue::Int(i) => JsValue::from_f64(i as f64),
 
         BencodeValue::Str(bytes) => {
-            if decode {
-                if let Ok(s) = String::from_utf8(bytes.clone()) {
-                    return JsValue::from_str(&s);
-                }
+            if decode && let Ok(s) = String::from_utf8(bytes.clone()) {
+                return JsValue::from_str(&s);
             }
             let arr = js_sys::Uint8Array::new_with_length(bytes.len() as u32);
             arr.copy_from(&bytes);
@@ -134,6 +132,6 @@ pub fn bencode(value: JsValue, decode_utf: Option<bool>) -> Result<Vec<u8>, JsVa
 #[wasm_bindgen]
 pub fn bdecode(bytes: &[u8], decode_utf: Option<bool>) -> Result<JsValue, JsValue> {
     let (tokens, _) =
-        bencode::dispatcher::bdecode::decode_bencode(bytes).map_err(|e| JsValue::from_str(e))?;
+        bencode::dispatcher::bdecode::decode_bencode(bytes).map_err(JsValue::from_str)?;
     Ok(bencode_to_js(tokens, decode_utf))
 }

@@ -165,7 +165,7 @@ mod python_bindings {
         decode_utf: Option<bool>,
     ) -> PyResult<Bound<'py, PyAny>> {
         let (decoded_objects, _rest) =
-            decode_bencode(string).map_err(|e| PyValueError::new_err(e))?;
+            decode_bencode(string).map_err(PyValueError::new_err)?;
         let python_objects = bencode_tokens_to_py(py, decoded_objects, decode_utf)?;
         Ok(python_objects)
     }

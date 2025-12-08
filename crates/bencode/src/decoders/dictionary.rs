@@ -1,9 +1,12 @@
 use crate::{dispatcher::bdecode::decode_bencode, enums::bencode::BencodeValue};
 use std::collections::BTreeMap;
 
-pub fn decode_dictionary(
-    data: &[u8],
-) -> Result<(BTreeMap<Vec<u8>, BencodeValue>, &[u8]), &'static str> {
+type DictionaryKey = Vec<u8>;
+type DictionaryValue = BencodeValue;
+
+type DictionaryOutput = BTreeMap<DictionaryKey, DictionaryValue>;
+
+pub fn decode_dictionary(data: &[u8]) -> Result<(DictionaryOutput, &[u8]), &'static str> {
     if data.is_empty() || data[0] != b'd' {
         return Err("Not a dictionary");
     }
