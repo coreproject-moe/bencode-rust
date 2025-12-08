@@ -51,11 +51,14 @@ jobs:
                   manylinux: auto
                   working-directory: crates/python_bindings
 
+            - name: Setup uv
+              uses: astral-sh/uv@v1
+
             - name: Install test dependencies
-              run: pip install pytest
+              run: uv install pytest
 
             - name: Install built wheel
-              run: pip install dist/*.whl
+              run: uv install dist/*.whl
 
             - name: Run pytest
               run: pytest -q
@@ -94,11 +97,14 @@ jobs:
                   manylinux: musllinux_1_2
                   working-directory: crates/python_bindings
 
+            - name: Setup uv
+              uses: astral-sh/uv@v1
+
             - name: Install test dependencies
-              run: pip install pytest
+              run: uv install pytest
 
             - name: Install built wheel
-              run: pip install dist/*.whl
+              run: uv install dist/*.whl
 
             - name: Run pytest
               run: pytest -q
@@ -133,11 +139,14 @@ jobs:
                   sccache: ${{ !startsWith(github.ref, 'refs/tags/') }}
                   working-directory: crates/python_bindings
 
+            - name: Setup uv
+              uses: astral-sh/uv@v1
+
             - name: Install test dependencies
-              run: pip install pytest
+              run: uv install pytest
 
             - name: Install built wheel
-              run: pip install dist/*.whl
+              run: uv install dist/*.whl
 
             - name: Run pytest
               run: pytest -q
@@ -171,11 +180,14 @@ jobs:
                   sccache: ${{ !startsWith(github.ref, 'refs/tags/') }}
                   working-directory: crates/python_bindings
 
+            - name: Setup uv
+              uses: astral-sh/uv@v1
+
             - name: Install test dependencies
-              run: pip install pytest
+              run: uv install pytest
 
             - name: Install built wheel
-              run: pip install dist/*.whl
+              run: uv install dist/*.whl
 
             - name: Run pytest
               run: pytest -q
