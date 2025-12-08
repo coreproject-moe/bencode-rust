@@ -8,7 +8,7 @@ pub fn decode_string(data: &[u8]) -> Result<(Vec<u8>, &[u8]), &'static str> {
     }
     let mut len: usize = 0;
     for &b in &data[..colon_pos] {
-        if b.is_ascii_digit() {
+        if !b.is_ascii_digit() {
             return Err("Invalid digit in length");
         }
         len = len * 10 + (b - b'0') as usize;
