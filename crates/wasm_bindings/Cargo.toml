@@ -13,7 +13,7 @@ bencode = { path = "../bencode" }
 js-sys = "0.3.83"
 
 [dev-dependencies]
-wasm-bindgen-test = "0.2"
+wasm-bindgen-test = "0.3"
 
 [package.metadata.wasm-pack.profile.release]
 wasm-opt = false # https://github.com/llvm/llvm-project/issues/64909
