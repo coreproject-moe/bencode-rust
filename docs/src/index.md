@@ -42,8 +42,8 @@ The main goals are:
 
 <small>
 
--   :star: : Priority Support
--   :rocket: : Support via wasm
+-   :star: : Support via native binding
+-   :rocket: : Support via WebAssembly
 
 </small>
 
