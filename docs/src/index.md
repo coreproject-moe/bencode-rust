@@ -8,7 +8,7 @@ icon: lucide/rocket
 </div>
 
 <p align="center">
-A modern bencode parser written from scratch for the next generation of torrent streaming
+    A modern bencode parser written from scratch for the next generation of torrent streaming
 </p>
 
 ---
@@ -38,6 +38,8 @@ The main goals are:
 | WebAssembly[^2] |    :star:    |  `crates/wasm_binding/`  |
 
 <small>:star: : Priority Support</small>
+
+---
 
 [^1]: Python support is due to CoreProject tracker and backend being written in Python
 [^2]: Webassembly support is due to CoreProject's main target of streaming content in a browser, also it indirectly allows us to target [node.js](https://nodejs.org/)/[deno](https://deno.com/)/[bun](https://bun.com/) users
