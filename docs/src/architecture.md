@@ -2,7 +2,9 @@
 icon: lucide/house
 ---
 
-## Encoder
+This module's main coding paradigm is based on the concepts of [funcational programming](https://en.wikipedia.org/wiki/Functional_programming)
+
+### Encoder
 
 Our current encoder is based on [tagged-union](https://en.wikipedia.org/wiki/Tagged_union) type dispatch via pattern matching
 
@@ -26,7 +28,7 @@ flowchart TD
 
 ```
 
-## Decoder
+### Decoder
 
 Our current architecture is based on [recursive-descent parser](https://en.wikipedia.org/wiki/Recursive_descent_parser)
 
@@ -60,4 +62,4 @@ flowchart TD
 
 !!! info "Future"
 
-    The next generation of the parser might be based on `Zero copy, cursor based Parser`, i will look into it after i create other parts of the project
+    The next generation of the parser might be based on `Zero copy, cursor based Parser` based on [object oriented rust](https://doc.rust-lang.org/book/ch18-00-oop.html), i will look into it after i create other parts of the project (beacause at this point my understanding of rust is very shallow)

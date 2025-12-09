@@ -4,7 +4,9 @@ icon: lucide/rocket
 ---
 
 <div align="center">
-    <img src="./img/logo.svg"  />
+
+![logo](./img/logo.svg){loading=lazy}
+
 </div>
 
 <p align="center">
