@@ -23,4 +23,3 @@ build:
         post_build:
             - mkdir -p $READTHEDOCS_OUTPUT/html/
             - cd docs && cp --recursive site/* $READTHEDOCS_OUTPUT/html/
-            - ls $READTHEDOCS_OUTPUT/html/

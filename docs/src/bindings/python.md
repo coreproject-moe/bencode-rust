@@ -1,5 +1,6 @@
 ---
 icon: simple/python
+title: Python
 ---
 
 Python support is first class
