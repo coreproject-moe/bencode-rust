@@ -31,14 +31,14 @@ The main goals are:
 
 # Language Support
 
-| Language        | Support Type |                                                    Location                                                    |
-| --------------- | :----------: | :------------------------------------------------------------------------------------------------------------: |
-| Rust            |    :star:    |                                                      Core                                                      |
-| Python[^1]      |    :star:    | [`crates/python_binding/`](https://github.com/coreproject-moe/bencode-rust/tree/master/crates/python_bindings) |
-| WebAssembly[^2] |    :star:    |   [`crates/wasm_binding/`](https://github.com/coreproject-moe/bencode-rust/tree/master/crates/wasm_bindings)   |
-| Node.js[^3]     |   :rocket:   |                                                       -                                                        |
-| Deno[^4]        |   :rocket:   |                                                       -                                                        |
-| Bun[^5]         |   :rocket:   |                                                       -                                                        |
+| Language        | Support Type |                                                    Location                                                     |
+| --------------- | :----------: | :-------------------------------------------------------------------------------------------------------------: |
+| Rust            |    :star:    |                                                      Core                                                       |
+| Python[^1]      |    :star:    | [`crates/python_bindings/`](https://github.com/coreproject-moe/bencode-rust/tree/master/crates/python_bindings) |
+| WebAssembly[^2] |    :star:    |   [`crates/wasm_bindings/`](https://github.com/coreproject-moe/bencode-rust/tree/master/crates/wasm_bindings)   |
+| Node.js[^3]     |   :rocket:   |                                                        -                                                        |
+| Deno[^4]        |   :rocket:   |                                                        -                                                        |
+| Bun[^5]         |   :rocket:   |                                                        -                                                        |
 
 <small>
 
