@@ -7,6 +7,8 @@
 
 ---
 
+# Introduction
+
 `bencode-rust` is a new parser for bencode written from scratch ( using rust! )
 
 The main goals are:
