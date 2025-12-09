@@ -5,8 +5,6 @@
     A modern bencode parser written from scratch for the next generation of torrent streaming
 </p>
 
----
-
 # Introduction
 
 `bencode-rust` is a new parser for bencode written from scratch ( using rust! )
