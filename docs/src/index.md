@@ -13,7 +13,7 @@ A modern bencode parser written from scratch for the next generation of torrent 
 
 ---
 
-Documentation :
+Documentation : https://bencode-rust.readthedocs.io/
 
 Source Code : https://github.com/baseplate-admin/bencode-rs
 
