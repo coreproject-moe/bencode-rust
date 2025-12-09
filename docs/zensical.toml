@@ -304,5 +304,5 @@ code = "Jetbrains Mono"
 # The "extra" section contains miscellaneous settings.
 # ----------------------------------------------------------------------------
 [[project.extra.social]]
-link = "https://github.com/coreproject-moe/bencode"
+link = "https://github.com/coreproject-moe/bencode-rust"
 icon = "fontawesome/brands/github"
