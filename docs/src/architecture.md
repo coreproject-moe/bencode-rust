@@ -62,4 +62,4 @@ flowchart TD
 
 !!! info "Future"
 
-    The next generation of the parser might be based on `Zero copy, cursor based Parser` based on [object oriented rust](https://doc.rust-lang.org/book/ch18-00-oop.html), i will look into it after i create other parts of the project (beacause at this point my understanding of rust is very shallow)
+    The next generation of the parser might be based on `Zero copy, cursor based Parser` based on [object oriented rust](https://doc.rust-lang.org/book/ch18-00-oop.html) see [coreproject-moe/bencode-rust#3](https://github.com/coreproject-moe/bencode-rust/issues/3), i will look into it after i create other parts of the project (beacause at this point my understanding of rust is very shallow)
