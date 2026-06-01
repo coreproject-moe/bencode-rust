@@ -1,8 +1,8 @@
 use std::collections::BTreeMap;
 
-use bencode::enums::bencode::BencodeValue;
-use bencode::encode_bencode;
 use bencode::decode_bencode;
+use bencode::encode_bencode;
+use bencode::enums::bencode::BencodeValue;
 use pyo3::{
     prelude::*,
     types::{PyDict, PyList, PyTuple},
@@ -78,9 +78,7 @@ fn bencode_to_py<'py>(
     decode_utf: bool,
 ) -> PyResult<Bound<'py, PyAny>> {
     match tokens {
-        BencodeValue::Int(i) => {
-            Ok(i.into_pyobject(py)?.into_any())
-        }
+        BencodeValue::Int(i) => Ok(i.into_pyobject(py)?.into_any()),
         BencodeValue::Str(bytes) => {
             if decode_utf {
                 match String::from_utf8(bytes) {
@@ -130,16 +128,15 @@ mod python_bindings {
     #[pyfunction]
     fn bencode(obj: Bound<PyAny>) -> PyResult<Vec<u8>> {
         let tokens = py_to_bencode_tokens(&obj)?;
-        encode_bencode(tokens)
-            .map_err(PyErr::new::<pyo3::exceptions::PyValueError, _>)
+        encode_bencode(tokens).map_err(PyErr::new::<pyo3::exceptions::PyValueError, _>)
     }
 
     /// Decode bencode bytes into a Python object.
     #[pyfunction]
     #[pyo3(signature = (data, decode_utf = true))]
     fn bdecode<'py>(py: Python<'py>, data: &[u8], decode_utf: bool) -> PyResult<Bound<'py, PyAny>> {
-        let (tokens, _) = decode_bencode(data)
-            .map_err(PyErr::new::<pyo3::exceptions::PyValueError, _>)?;
+        let (tokens, _) =
+            decode_bencode(data).map_err(PyErr::new::<pyo3::exceptions::PyValueError, _>)?;
         bencode_to_py(py, tokens, decode_utf)
     }
 }
