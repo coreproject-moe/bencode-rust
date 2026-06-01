@@ -1,4 +1,4 @@
-pub fn encode_integer(data: isize) -> Result<Vec<u8>, &'static str> {
+pub fn encode_integer(data: i128) -> Result<Vec<u8>, &'static str> {
     let encoded = format!("i{}e", data);
     Ok(encoded.into_bytes())
 }

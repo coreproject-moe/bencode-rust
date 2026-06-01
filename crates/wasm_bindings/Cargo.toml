@@ -16,4 +16,5 @@ js-sys = "0.3.83"
 wasm-bindgen-test = "0.3"
 
 [package.metadata.wasm-pack.profile.release]
-wasm-opt = false # https://github.com/llvm/llvm-project/issues/64909
+# Disable wasm-opt: bulk memory validation fails with current binaryen version
+wasm-opt = false

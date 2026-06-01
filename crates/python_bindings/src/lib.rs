@@ -1,39 +1,39 @@
 use std::collections::BTreeMap;
 
 use bencode::enums::bencode::BencodeValue;
+use bencode::encode_bencode;
+use bencode::decode_bencode;
 use pyo3::{
-    IntoPyObjectExt,
     prelude::*,
     types::{PyDict, PyList, PyTuple},
 };
 
-fn py_to_bencode_tokens(obj: Bound<PyAny>, decode_utf: Option<bool>) -> PyResult<BencodeValue> {
-    let decode = decode_utf.unwrap_or(false);
-
-    // List (PyList)
+/// Convert a Python object into a `BencodeValue`.
+fn py_to_bencode_tokens(obj: &Bound<PyAny>) -> PyResult<BencodeValue> {
+    // List
     if let Ok(list) = obj.cast::<PyList>() {
-        let mut items = Vec::new();
-        for item in list.iter() {
-            items.push(py_to_bencode_tokens(item, Some(decode))?);
-        }
+        let items = list
+            .iter()
+            .map(|item| py_to_bencode_tokens(&item))
+            .collect::<PyResult<Vec<_>>>()?;
         return Ok(BencodeValue::List(items));
     }
 
-    // Tuple -> treat exactly like a list
+    // Tuple -> treat as list
     if let Ok(tuple) = obj.cast::<PyTuple>() {
-        let mut items = Vec::new();
-        for item in tuple.iter() {
-            items.push(py_to_bencode_tokens(item, Some(decode))?);
-        }
+        let items = tuple
+            .iter()
+            .map(|item| py_to_bencode_tokens(&item))
+            .collect::<PyResult<Vec<_>>>()?;
         return Ok(BencodeValue::List(items));
     }
 
-    // Integers
-    if let Ok(int_val) = obj.extract::<isize>() {
+    // Integer
+    if let Ok(int_val) = obj.extract::<i128>() {
         return Ok(BencodeValue::Int(int_val));
     }
 
-    // Strings -> UTF-8 bytes
+    // String -> UTF-8 bytes
     if let Ok(s) = obj.extract::<String>() {
         return Ok(BencodeValue::Str(s.into_bytes()));
     }
@@ -45,127 +45,101 @@ fn py_to_bencode_tokens(obj: Bound<PyAny>, decode_utf: Option<bool>) -> PyResult
 
     // Dict
     if let Ok(dict) = obj.cast::<PyDict>() {
-        let mut map = BTreeMap::<Vec<u8>, BencodeValue>::new();
+        let mut map = BTreeMap::new();
 
         for (key, value) in dict.iter() {
-            let key_bytes: Vec<u8> = if decode {
-                // Keys must be byte-like and valid UTF-8
-                if let Ok(s) = key.extract::<String>() {
-                    // Python str -> UTF-8 bytes
-                    s.into_bytes()
-                } else if let Ok(b) = key.extract::<Vec<u8>>() {
-                    // Ensure bytes are valid UTF-8 then return raw bytes
-                    String::from_utf8(b).map(|s| s.into_bytes()).map_err(|_| {
-                        PyErr::new::<pyo3::exceptions::PyValueError, _>(
-                            "Dictionary key bytes are not valid UTF-8",
-                        )
-                    })?
-                } else {
-                    return Err(PyErr::new::<pyo3::exceptions::PyTypeError, _>(
-                        "Dictionary keys must be str or bytes",
-                    ));
-                }
+            let key_bytes: Vec<u8> = if let Ok(s) = key.extract::<&str>() {
+                s.as_bytes().to_vec()
+            } else if let Ok(py_bytes) = key.extract::<&[u8]>() {
+                py_bytes.to_vec()
             } else {
-                // Convert Python key → Vec<u8>
-                if let Ok(py_str) = key.extract::<&str>() {
-                    // Python str → UTF-8 bytes
-                    py_str.as_bytes().to_vec()
-                } else if let Ok(py_bytes) = key.extract::<&[u8]>() {
-                    // Python bytes → raw bytes
-                    py_bytes.to_vec()
-                } else {
-                    return Err(PyErr::new::<pyo3::exceptions::PyTypeError, _>(
-                        "Dictionary keys must be str or bytes",
-                    ));
-                }
+                return Err(PyErr::new::<pyo3::exceptions::PyTypeError, _>(
+                    "Dictionary keys must be str or bytes",
+                ));
             };
 
-            // Convert value recursively
-            let val = py_to_bencode_tokens(value, Some(decode))?;
+            let val = py_to_bencode_tokens(&value)?;
             map.insert(key_bytes, val);
         }
 
         return Ok(BencodeValue::Dict(map));
     }
 
-    // Unsupported type
     Err(PyErr::new::<pyo3::exceptions::PyTypeError, _>(format!(
-        "Unsupported type: {}",
-        obj.get_type().name()?
+        "Unsupported type: {:?}",
+        obj.get_type(),
     )))
 }
 
-fn bencode_tokens_to_py(
-    py: Python,
+/// Convert a `BencodeValue` back into a Python object.
+fn bencode_to_py<'py>(
+    py: Python<'py>,
     tokens: BencodeValue,
-    decode_utf: Option<bool>,
-) -> PyResult<Bound<PyAny>> {
-    let decoded = decode_utf.unwrap_or(false);
-
+    decode_utf: bool,
+) -> PyResult<Bound<'py, PyAny>> {
     match tokens {
-        BencodeValue::Int(i) => Ok(i.into_bound_py_any(py)?),
+        BencodeValue::Int(i) => {
+            Ok(i.into_pyobject(py)?.into_any())
+        }
         BencodeValue::Str(bytes) => {
-            // Attempt UTF-8 decoding
-            match String::from_utf8(bytes) {
-                Ok(utf8_string) => Ok(utf8_string.into_bound_py_any(py)?),
-                Err(e) => {
-                    // Fall back to bytes for invalid UTF-8
-                    let raw_bytes = e.into_bytes();
-                    Ok(raw_bytes.into_bound_py_any(py)?)
+            if decode_utf {
+                match String::from_utf8(bytes) {
+                    Ok(s) => Ok(pyo3::types::PyString::new(py, &s).into_any()),
+                    Err(e) => {
+                        let b = e.into_bytes();
+                        Ok(pyo3::types::PyBytes::new(py, &b).into_any())
+                    }
                 }
+            } else {
+                Ok(pyo3::types::PyBytes::new(py, &bytes).into_any())
             }
         }
         BencodeValue::List(list) => {
             let py_list = PyList::empty(py);
             for item in list {
-                py_list.append(bencode_tokens_to_py(py, item, Some(decoded))?)?;
+                let py_item = bencode_to_py(py, item, decode_utf)?;
+                py_list.append(py_item)?;
             }
             Ok(py_list.into_any())
         }
         BencodeValue::Dict(dict) => {
             let py_dict = PyDict::new(py);
             for (key, value) in dict {
-                // Handle dict key: decode as UTF-8 if requested and valid
-                let key_obj = if decoded {
-                    match String::from_utf8(key) {
-                        Ok(s) => s.into_bound_py_any(py)?,
-                        Err(e) => e.into_bytes().into_bound_py_any(py)?,
-                    }
-                } else {
-                    key.into_bound_py_any(py)?
-                };
-                py_dict.set_item(key_obj, bencode_tokens_to_py(py, value, Some(decoded))?)?;
+                let key_str = String::from_utf8_lossy(&key);
+                let key_obj = pyo3::types::PyString::new(py, &key_str);
+                let val_obj = bencode_to_py(py, value, decode_utf)?;
+                py_dict.set_item(key_obj, val_obj)?;
             }
             Ok(py_dict.into_any())
         }
     }
 }
 
+/// bencode_rs Python module.
+///
+/// Provides `bencode()` and `bdecode()` for encoding/decoding bencode data.
+/// Uses a cursor-based iterative parser with heap-allocated stack frames
+/// for zero-recursion, arbitrarily deep nesting.
+///
+/// Built with pyo3 GIL-less API (Bound<'py, PyAny>) for Python 3.12+ stable ABI.
 #[pymodule(name = "bencode_rs")]
 mod python_bindings {
-    use ::bencode::dispatcher::{bdecode::decode_bencode, bencode::encode_bencode};
-    use pyo3::exceptions::PyValueError;
-    use pyo3::prelude::*;
+    use super::*;
 
-    use super::{bencode_tokens_to_py, py_to_bencode_tokens};
-
+    /// Encode a Python object into bencode bytes.
     #[pyfunction]
-    #[pyo3(signature = (obj, decode_utf=false))]
-    fn bencode(obj: Bound<PyAny>, decode_utf: Option<bool>) -> PyResult<Vec<u8>> {
-        let objects = py_to_bencode_tokens(obj, decode_utf)?;
-        let encoded = encode_bencode(objects).unwrap();
-        Ok(encoded)
+    fn bencode(obj: Bound<PyAny>) -> PyResult<Vec<u8>> {
+        let tokens = py_to_bencode_tokens(&obj)?;
+        encode_bencode(tokens)
+            .map_err(PyErr::new::<pyo3::exceptions::PyValueError, _>)
     }
 
+    /// Decode bencode bytes into a Python object.
     #[pyfunction]
-    #[pyo3(signature = (string, decode_utf=false))]
-    fn bdecode<'py>(
-        py: Python<'py>,
-        string: &[u8],
-        decode_utf: Option<bool>,
-    ) -> PyResult<Bound<'py, PyAny>> {
-        let (decoded_objects, _rest) = decode_bencode(string).map_err(PyValueError::new_err)?;
-        let python_objects = bencode_tokens_to_py(py, decoded_objects, decode_utf)?;
-        Ok(python_objects)
+    #[pyo3(signature = (data, decode_utf = true))]
+    fn bdecode<'py>(py: Python<'py>, data: &[u8], decode_utf: bool) -> PyResult<Bound<'py, PyAny>> {
+        let (tokens, _) = decode_bencode(data)
+            .map_err(PyErr::new::<pyo3::exceptions::PyValueError, _>)?;
+        bencode_to_py(py, tokens, decode_utf)
     }
 }
