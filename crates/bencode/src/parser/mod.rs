@@ -40,9 +40,7 @@ pub fn parse_bencode(input: &[u8]) -> Result<(BencodeValue, &[u8]), &'static str
         }
         b'l' => {
             cursor.advance(1);
-            stack.push(ParseFrame::List {
-                items: Vec::new(),
-            });
+            stack.push(ParseFrame::List { items: Vec::new() });
         }
         b'd' => {
             cursor.advance(1);
@@ -121,7 +119,10 @@ fn push_value(stack: &mut ParseStack, value: BencodeValue) -> Result<(), &'stati
             items.push(value);
             Ok(())
         }
-        ParseFrame::Dict { entries, pending_key } => {
+        ParseFrame::Dict {
+            entries,
+            pending_key,
+        } => {
             if let Some(key) = pending_key.take() {
                 entries.insert(key, value);
                 Ok(())
@@ -143,7 +144,10 @@ fn push_value(stack: &mut ParseStack, value: BencodeValue) -> Result<(), &'stati
 fn complete_frame(frame: ParseFrame) -> Result<BencodeValue, &'static str> {
     match frame {
         ParseFrame::List { items } => Ok(BencodeValue::List(items)),
-        ParseFrame::Dict { entries, pending_key } => {
+        ParseFrame::Dict {
+            entries,
+            pending_key,
+        } => {
             if pending_key.is_some() {
                 return Err("Dictionary has unpaired key at end");
             }

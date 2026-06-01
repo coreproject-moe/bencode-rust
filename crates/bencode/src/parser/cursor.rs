@@ -57,7 +57,8 @@ impl<'a> Cursor<'a> {
             }
             let digit = (b - b'0') as usize;
             if digit < 10 {
-                len = len.checked_mul(10)
+                len = len
+                    .checked_mul(10)
                     .ok_or("String length overflow")?
                     .checked_add(digit)
                     .ok_or("String length overflow")?;
@@ -89,7 +90,9 @@ impl<'a> Cursor<'a> {
         }
 
         // Leading-zero check: if next byte is '0' and followed by another digit, reject
-        if let Some(&b) = self.input.get(self.position) && b == b'0' {
+        if let Some(&b) = self.input.get(self.position)
+            && b == b'0'
+        {
             if let Some(&b2) = self.input.get(self.position + 1)
                 && b2.is_ascii_digit()
             {
@@ -110,7 +113,8 @@ impl<'a> Cursor<'a> {
             }
             if b.is_ascii_digit() {
                 let digit = (b - b'0') as i128;
-                value = value.checked_mul(10)
+                value = value
+                    .checked_mul(10)
                     .ok_or("Integer overflow")?
                     .checked_add(digit)
                     .ok_or("Integer overflow")?;

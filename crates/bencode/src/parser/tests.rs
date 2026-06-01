@@ -2,7 +2,7 @@
 #[allow(clippy::module_inception)]
 mod tests {
     use crate::enums::bencode::BencodeValue;
-    use crate::parser::{parse_bencode, Cursor};
+    use crate::parser::{Cursor, parse_bencode};
 
     // --- Strings ---
 
@@ -141,7 +141,10 @@ mod tests {
         match val {
             BencodeValue::Dict(map) => {
                 assert_eq!(map.len(), 1);
-                assert_eq!(*map.get(b"name".as_slice()).unwrap(), BencodeValue::Str(b"alice".to_vec()));
+                assert_eq!(
+                    *map.get(b"name".as_slice()).unwrap(),
+                    BencodeValue::Str(b"alice".to_vec())
+                );
             }
             _ => panic!("Expected dict"),
         }
@@ -154,7 +157,10 @@ mod tests {
             BencodeValue::Dict(map) => {
                 assert_eq!(map.len(), 2);
                 assert_eq!(*map.get(b"age".as_slice()).unwrap(), BencodeValue::Int(25));
-                assert_eq!(*map.get(b"name".as_slice()).unwrap(), BencodeValue::Str(b"alice".to_vec()));
+                assert_eq!(
+                    *map.get(b"name".as_slice()).unwrap(),
+                    BencodeValue::Str(b"alice".to_vec())
+                );
             }
             _ => panic!("Expected dict"),
         }
@@ -169,7 +175,10 @@ mod tests {
                 match map.get(b"addr".as_slice()) {
                     Some(BencodeValue::Dict(inner)) => {
                         assert_eq!(inner.len(), 1);
-                        assert_eq!(*inner.get(b"zipcode".as_slice()).unwrap(), BencodeValue::Int(90210));
+                        assert_eq!(
+                            *inner.get(b"zipcode".as_slice()).unwrap(),
+                            BencodeValue::Int(90210)
+                        );
                     }
                     _ => panic!("Expected nested dict"),
                 }
@@ -234,9 +243,7 @@ mod tests {
                 map.insert(b"key".to_vec(), BencodeValue::Int(-99));
                 map
             }),
-            BencodeValue::List(vec![
-                BencodeValue::Str(b"nested".to_vec()),
-            ]),
+            BencodeValue::List(vec![BencodeValue::Str(b"nested".to_vec())]),
         ]);
 
         let encoded = encode_bencode(original.clone()).unwrap();

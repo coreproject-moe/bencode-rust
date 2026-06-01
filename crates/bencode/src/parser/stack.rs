@@ -6,9 +6,7 @@ use std::collections::BTreeMap;
 #[derive(Debug)]
 pub enum ParseFrame {
     /// Collecting items into a list (terminated by 'e').
-    List {
-        items: Vec<BencodeValue>,
-    },
+    List { items: Vec<BencodeValue> },
     /// Collecting key-value pairs into a dictionary (terminated by 'e').
     Dict {
         entries: BTreeMap<Vec<u8>, BencodeValue>,
