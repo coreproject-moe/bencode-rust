@@ -1,4 +1,5 @@
 #[cfg(test)]
+#[allow(clippy::module_inception)]
 mod tests {
     use crate::enums::bencode::BencodeValue;
     use crate::parser::{parse_bencode, Cursor};
@@ -140,7 +141,7 @@ mod tests {
         match val {
             BencodeValue::Dict(map) => {
                 assert_eq!(map.len(), 1);
-                assert_eq!(*map.get(&b"name".to_vec()).unwrap(), BencodeValue::Str(b"alice".to_vec()));
+                assert_eq!(*map.get(b"name".as_slice()).unwrap(), BencodeValue::Str(b"alice".to_vec()));
             }
             _ => panic!("Expected dict"),
         }
@@ -152,8 +153,8 @@ mod tests {
         match val {
             BencodeValue::Dict(map) => {
                 assert_eq!(map.len(), 2);
-                assert_eq!(*map.get(&b"age".to_vec()).unwrap(), BencodeValue::Int(25));
-                assert_eq!(*map.get(&b"name".to_vec()).unwrap(), BencodeValue::Str(b"alice".to_vec()));
+                assert_eq!(*map.get(b"age".as_slice()).unwrap(), BencodeValue::Int(25));
+                assert_eq!(*map.get(b"name".as_slice()).unwrap(), BencodeValue::Str(b"alice".to_vec()));
             }
             _ => panic!("Expected dict"),
         }
@@ -165,10 +166,10 @@ mod tests {
         match val {
             BencodeValue::Dict(map) => {
                 assert_eq!(map.len(), 1);
-                match map.get(&b"addr".to_vec()) {
+                match map.get(b"addr".as_slice()) {
                     Some(BencodeValue::Dict(inner)) => {
                         assert_eq!(inner.len(), 1);
-                        assert_eq!(*inner.get(&b"zipcode".to_vec()).unwrap(), BencodeValue::Int(90210));
+                        assert_eq!(*inner.get(b"zipcode".as_slice()).unwrap(), BencodeValue::Int(90210));
                     }
                     _ => panic!("Expected nested dict"),
                 }
@@ -254,9 +255,9 @@ mod tests {
         let inner = b"i1e";
         let needed = depth + inner.len() + depth;
         let mut payload = Vec::with_capacity(needed);
-        payload.extend(std::iter::repeat(b'l').take(depth));
+        payload.extend(std::iter::repeat_n(b'l', depth));
         payload.extend(inner);
-        payload.extend(std::iter::repeat(b'e').take(depth));
+        payload.extend(std::iter::repeat_n(b'e', depth));
 
         let (val, _rest) = parse_bencode(&payload).unwrap();
         assert!(matches!(val, BencodeValue::List(_)));
@@ -268,7 +269,7 @@ mod tests {
     fn cursor_position_advances_correctly() {
         let cursor = Cursor::new(b"hello");
         assert_eq!(cursor.peek(), Some(b'h'));
-        let mut c = cursor.clone();
+        let mut c = cursor;
         c.advance(3);
         assert_eq!(c.peek(), Some(b'l'));
         assert_eq!(c.remaining(), b"lo".as_slice());
